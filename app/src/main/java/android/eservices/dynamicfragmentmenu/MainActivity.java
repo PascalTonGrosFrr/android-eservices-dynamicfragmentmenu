@@ -12,8 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationInterface {
 
@@ -66,15 +69,8 @@ public class MainActivity extends AppCompatActivity implements NavigationInterfa
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                //TODO react according to the selected item menu
-                //We need to display the right fragment according to the menu item selection.
-                //Any created fragment must be cached so it is only created once.
-                //You need to implement this "cache" manually : when you create a fragment based on the menu item,
-                //store it the way you prefer, so when you select this menu item later, you first check if the fragment already exists
-                //and then you use it. If the fragment doesn't exist (it is not cached then) you get an instance of it and store it in the cache.
-
-
-                //TODO when we select logoff, I want the Activity to be closed (and so the Application, as it has only one activity)
+                chooseFragment(menuItem.getOrder());
+                replaceFragment(currentFragment);
 
                 //check in the doc what this boolean means and use it the right way ...
                 return false;
@@ -82,8 +78,33 @@ public class MainActivity extends AppCompatActivity implements NavigationInterfa
         });
     }
 
+    public void chooseFragment(int order) {
+        if (fragmentArray.get(order) != null) {
+            currentFragment = fragmentArray.get(order);
+        } else {
+            switch(order) {
+                case 0:
+                    SelectedFragment sf = new SelectedFragment();
+                    fragmentArray.put(order, sf);
+                    currentFragment = sf;
+                break;
+                case 1:
+                    FavoritesFragment ff = new FavoritesFragment();
+                    fragmentArray.put(order, ff);
+                    currentFragment = ff;
+                break;
+                case 2:
+                    logoff();
+                    break;
+            }
+        }
+    }
+
+
 
     private void replaceFragment(Fragment newFragment) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, newFragment);
         //TODO replace fragment inside R.id.fragment_container using a FragmentTransaction
     }
 
